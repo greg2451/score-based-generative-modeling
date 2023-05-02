@@ -69,7 +69,9 @@ def loss_fn(model, x, marginal_prob_std, eps=1e-5):
     )
 
 
-def load_model(run_datetime: str, pretrained_path: Optional[str] = None):
+def load_model(
+    run_datetime: Optional[str] = None, pretrained_path: Optional[str] = None
+):
     score_model = torch.nn.DataParallel(
         ScoreNet(marginal_prob_std=marginal_prob_std_fn)
     )
@@ -77,6 +79,7 @@ def load_model(run_datetime: str, pretrained_path: Optional[str] = None):
     if pretrained_path is not None:
         weights = torch.load(pretrained_path, map_location=DEVICE)
         score_model.load_state_dict(weights)
+    if run_datetime is not None:
         (run_dir := Path(f"runs/{run_datetime}")).mkdir(exist_ok=True, parents=True)
         torch.save(score_model.state_dict(), run_dir / "start.pt")
 
@@ -88,5 +91,7 @@ def load_dataset(num_samples: Optional[int] = None):
         "./data/", train=True, transform=transforms.ToTensor(), download=True
     )
     if num_samples is not None:
-        dataset = torch.utils.data.Subset(dataset, range(num_samples))
+        dataset = torch.utils.data.Subset(
+            dataset, range(min(len(dataset), num_samples))
+        )
     return dataset

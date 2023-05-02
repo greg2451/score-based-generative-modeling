@@ -3,24 +3,59 @@ from datetime import datetime
 from utils import loss_fn, marginal_prob_std_fn, load_model, load_dataset
 from train import train
 
+import argparse
 
-num_epochs = 5
-batch_size = 128
-learning_rate = 1e-5
 
 run_datetime = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
 if __name__ == "__main__":
-    score_model = load_model(run_datetime=run_datetime, pretrained_path=None)
+    parser = argparse.ArgumentParser(description="Train a score-based model.")
+    parser.add_argument(
+        "--num_epochs",
+        type=int,
+        default=5,
+        help="The number of epochs to train the model for.",
+    )
+    parser.add_argument(
+        "--batch_size",
+        type=int,
+        default=128,
+        help="The batch size to use for training.",
+    )
+    parser.add_argument(
+        "--learning_rate",
+        type=float,
+        default=1e-5,
+        help="The learning rate to use for training.",
+    )
 
-    dataset = load_dataset(100)
+    parser.add_argument(
+        "--pretrained_path",
+        type=str,
+        default=None,
+        help="The path to the pretrained model.",
+    )
+
+    parser.add_argument(
+        "--num_samples",
+        type=int,
+        default=None,
+        help="The number of samples to use for training.",
+    )
+
+    args = parser.parse_args()
+    score_model = load_model(
+        run_datetime=run_datetime, pretrained_path=args.pretrained_path
+    )
+
+    dataset = load_dataset(num_samples=args.num_samples)
 
     train(
         score_model,
         dataset,
-        num_epochs,
-        batch_size,
-        learning_rate,
+        args.num_epochs,
+        args.batch_size,
+        args.learning_rate,
         loss_fn,
         marginal_prob_std_fn,
         run_datetime=run_datetime,

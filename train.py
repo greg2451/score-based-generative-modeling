@@ -29,6 +29,7 @@ def train(
     )
 
     (run_dir := Path(f"runs/{run_datetime}")).mkdir(exist_ok=True, parents=True)
+    print(f"Starting training. Run directory: {run_dir}")
 
     optimizer = Adam(score_model.parameters(), lr=learning_rate)
     min_loss = Inf
@@ -50,3 +51,5 @@ def train(
             min_loss = current_loss
 
         save(score_model.state_dict(), run_dir / "last.pt")
+
+        print(f"Training complete. Best loss: {min_loss:5f}.")
