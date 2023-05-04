@@ -18,7 +18,7 @@ parser = argparse.ArgumentParser(
 parser.add_argument(
     "--model_path",
     type=str,
-    default="FashionMNIST_UNet.pth",
+    default="pretrained_models/FashionMNIST_UNet.pt",
     help="The path to the pretrained model.",
 )
 
@@ -74,6 +74,7 @@ if __name__ == "__main__":
             "The sampler must be one of 'euler_maruyama_sampler', 'pc_sampler', 'ode_sampler'."
         )
 
+    kwargs["batch_size"] = args.batch_size
     print(f"Generating samples using {args.sampler} with {kwargs}...")
 
     sampler = {
@@ -88,7 +89,6 @@ if __name__ == "__main__":
         score_model,
         marginal_prob_std_fn,
         diffusion_coeff_fn,
-        args.batch_size,
         **kwargs,
     )
 

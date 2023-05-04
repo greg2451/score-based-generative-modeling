@@ -1,5 +1,4 @@
 from math import log
-from pathlib import Path
 from typing import Optional
 
 import torch
@@ -12,8 +11,10 @@ from model import ScoreNet
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
+SIGMA = 25.0
 
-def marginal_prob_std(t, sigma):
+
+def marginal_prob_std(t, sigma=SIGMA):
     """Compute the mean and standard deviation of $p_{0t}(x(t) | x(0))$.
 
     Args:
@@ -28,7 +29,7 @@ def marginal_prob_std(t, sigma):
     return torch.sqrt((sigma ** (2 * t.to(DEVICE)) - 1.0) / 2.0 / log(sigma))
 
 
-def diffusion_coeff(t, sigma):
+def diffusion_coeff(t, sigma=SIGMA):
     """Compute the diffusion coefficient of our SDE.
 
     Args:
@@ -43,9 +44,8 @@ def diffusion_coeff(t, sigma):
     return sigma**t
 
 
-sigma = 25.0
-marginal_prob_std_fn = functools.partial(marginal_prob_std, sigma=sigma)
-diffusion_coeff_fn = functools.partial(diffusion_coeff, sigma=sigma)
+marginal_prob_std_fn = functools.partial(marginal_prob_std)
+diffusion_coeff_fn = functools.partial(diffusion_coeff)
 
 
 def loss_fn(model, x, marginal_prob_std, eps=1e-5):
@@ -69,9 +69,7 @@ def loss_fn(model, x, marginal_prob_std, eps=1e-5):
     )
 
 
-def load_model(
-    run_datetime: Optional[str] = None, pretrained_path: Optional[str] = None
-):
+def load_model(pretrained_path: Optional[str] = None):
     score_model = torch.nn.DataParallel(
         ScoreNet(marginal_prob_std=marginal_prob_std_fn)
     )
@@ -79,9 +77,6 @@ def load_model(
     if pretrained_path is not None:
         weights = torch.load(pretrained_path, map_location=DEVICE)
         score_model.load_state_dict(weights)
-    if run_datetime is not None:
-        (run_dir := Path(f"runs/{run_datetime}")).mkdir(exist_ok=True, parents=True)
-        torch.save(score_model.state_dict(), run_dir / "start.pt")
 
     return score_model
 

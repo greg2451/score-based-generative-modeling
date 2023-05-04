@@ -44,9 +44,7 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
-    score_model = load_model(
-        run_datetime=run_datetime, pretrained_path=args.pretrained_path
-    )
+    score_model = load_model(pretrained_path=args.pretrained_path)
 
     dataset = load_dataset(num_samples=args.num_samples)
 
