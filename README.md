@@ -25,7 +25,7 @@ This repository is inspired from the work done in the paper _Score-Based Generat
 Clone the repository:
 
 ```sh
-git clone https://github.com/greg2451/score-based-generative-model.git
+git clone https://github.com/greg2451/score-based-generative-modeling.git
 ```
 
 ### Configuration
