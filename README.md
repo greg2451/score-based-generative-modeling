@@ -95,7 +95,7 @@ All generated images will be saved in the `generations` folder.
 
 ### Train a model on FashionMNIST
 
-Just run the first cell of the [notebook](score-based-generative-model/experimentation.ipynb) and wait for the training to finish! You can tune the hyperparameters by changing the values of the variables in the first cell.
+Just run the first cell of the [notebook](score-based-generative-modeling/experimentation.ipynb) and wait for the training to finish! You can tune the hyperparameters by changing the values of the variables in the first cell.
 The expected output is the same as the one described in the [previous section](#train-a-model-on-fashionmnist).
 
 
